@@ -7,4 +7,4 @@ A tool to syncronize folders.
 - Use by coping to bash_profile
 
 ## How to use
-- `jwatch ~\path\to\update
+- `jwatch ~\path\to\update`
