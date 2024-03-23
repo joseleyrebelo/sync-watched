@@ -1,0 +1,28 @@
+#!/bin/zsh
+# ⚠️ This is a gist - not cross-tested. Read through; use it diligently.
+
+# Checks for dependencies
+
+type fswatch >/dev/null 2>&1 || {
+  echo >&2 "I require fswatch but it's not installed.  Aborting."
+  exit 1
+}
+type rsync >/dev/null 2>&1 || {
+  echo >&2 "I require rsync but it's not installed.  Aborting."
+  exit 1
+}
+
+#Starts installation
+
+_DIR="${0:A:h}"
+LINE="export PATH=\"$_DIR/bin:\$PATH\""
+
+PROFILE=~/.zprofile
+grep -qsFx "$LINE" "$PROFILE" || echo "\n$LINE\n" >>"$PROFILE"
+
+# ⚠️ Copied / Powerful / Complex
+exec sudo --login --user "$USER" /bin/sh -c "cd '$PWD'; exec '$SHELL' -l"
+
+# TODO
+# - 🤔 Create "sh" profile file backup?
+# - Handle using .bash_profile rather than .zprofile

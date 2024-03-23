@@ -1,0 +1,32 @@
+#!/bin/zsh
+
+sync_folder() {
+    excludes=("${@:3}")
+    # todoc - cuts the first two args of; and chefs it any contains @, if any is ssh (weak check)
+    if [[ "${@:1:2}" == *"@"* ]]; then # ?? still required (used ssh-copy-id since then)
+        # todoc - string multiplication; rsync exclude
+        rsync -artuv --delete -e ssh $1 $2 $(printf '--exclude=%s ' "${excludes[@]}")
+    else
+        rsync -artuv --delete $1 $2 $(printf '--exclude=%s ' "${excludes[@]}")
+    fi
+
+    now=$(date +"%r")
+    tput rev
+    echo "Running syncnwatch end-goal. (${now})"
+    tput sgr0
+}
+
+if [ ! -z "$1" ]; then
+    if [ ! -z "$2" ]; then
+        sync_folder $@
+    else
+        echo >&2 "I require a second path argument (ssh or directory).  Aborting."
+        exit 1
+    fi
+
+    fswatch --batch-marker=EOF -xn $1 | while read file event; do
+        sync_folder $@
+    done
+else
+    echo "I required a first path argument (ssh or directory)"
+fi
